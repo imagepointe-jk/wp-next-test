@@ -19,7 +19,7 @@ export async function middleware(request: NextRequest) {
         "Missing token and/or user id in cookies."
       );
 
-    verifyCookies(cookiesToken, cookiesId);
+    await verifyCookies(cookiesToken, cookiesId);
   } catch (error) {
     if (error instanceof AuthError) {
       console.error(error.serverMessage);
