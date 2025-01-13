@@ -1,6 +1,5 @@
 import { validateLoginResponse } from "@/types/validation/wpgraphql";
 import { NextRequest, NextResponse } from "next/server";
-import { inspect } from "util";
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
@@ -36,8 +35,6 @@ export async function POST(request: NextRequest) {
       { status: authStatus.status }
     );
   }
-
-  console.log(inspect(jwtJson, false, null));
 
   const response = NextResponse.json(authStatus.user);
   response.cookies.set("wp_jwt_auth", jwtJson.data.login.authToken, {
