@@ -5,9 +5,6 @@ import { inspect } from "util";
 export async function POST(request: NextRequest) {
   const body = await request.json();
 
-  console.log(
-    "sending auth request==============================================="
-  );
   const jwtResponse = await fetch(process.env.WP_GRAPHQL_URL!, {
     method: "POST",
     headers: {

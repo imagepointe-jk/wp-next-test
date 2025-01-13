@@ -30,10 +30,20 @@ export const userResponseSchema = z.object({
       user: z
         .object({
           id: z.string(),
+          databaseId: z.number(),
+          email: z.string().nullable(),
           name: z.string(),
         })
         .nullable(),
     })
     .optional(),
   errors: errorsSchema,
+});
+
+export const userJwtSchema = z.object({
+  data: z.object({
+    user: z.object({
+      id: z.string(),
+    }),
+  }),
 });
