@@ -3,6 +3,7 @@ import { MiddlewareConfig, NextRequest, NextResponse } from "next/server";
 import { validateUserResponse } from "./types/validation/wpgraphql";
 
 export async function middleware(request: NextRequest) {
+  console.log("running middleware");
   const cookieStore = await cookies();
   const authCookie = cookieStore.get("wp_jwt_auth");
   const idCookie = cookieStore.get("wp_user_id");

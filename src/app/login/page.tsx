@@ -1,10 +1,11 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { FormEvent } from "react";
-import { z } from "zod";
+import { FormEvent, useState } from "react";
 
 export default function Page() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null as string | null);
   const router = useRouter();
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
@@ -12,27 +13,36 @@ export default function Page() {
 
     const form = e.target as HTMLFormElement;
     const formData = new FormData(form);
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_SERVER_URL}/api/login`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username: formData.get("username"),
-          password: formData.get("password"),
-        }),
-      }
-    );
-    const json = await response.json();
-    const schema = z.object({
-      id: z.string(),
-      name: z.string(),
-      databaseId: z.number(),
-    });
-    const parsed = schema.parse(json);
-    router.push(`/users/${parsed.id}`);
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: formData.get("username"),
+            password: formData.get("password"),
+          }),
+        }
+      );
+      const json = await response.json();
+      if (!response.ok)
+        throw new Error(
+          `Response ${response.status}: ${json.message || "Unknown error"}`
+        );
+      if (!json.id) throw new Error("Invalid id received from API");
+
+      router.push(`/users/${json.id}`);
+    } catch (error) {
+      console.error(error);
+      setError("Login failed.");
+      setLoading(false);
+    }
   }
 
   return (
@@ -55,6 +65,8 @@ export default function Page() {
           <button type="submit">Submit</button>
         </div>
       </form>
+      {loading && <div>Logging in...</div>}
+      {error && <div style={{ color: "red" }}>{error}</div>}
     </>
   );
 }
