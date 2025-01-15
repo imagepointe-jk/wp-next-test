@@ -1,12 +1,13 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { FormEvent, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { FormEvent, useEffect, useState } from "react";
 
 export default function Page() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null as string | null);
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -44,6 +45,26 @@ export default function Page() {
       setLoading(false);
     }
   }
+
+  async function logout() {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/logout`,
+        {
+          method: "POST",
+        }
+      );
+      if (!response.ok) throw new Error("Error while logging out.");
+    } catch (error) {
+      console.error(error);
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    const action = searchParams.get("action");
+    if (action === "logout") logout();
+  }, []);
 
   return (
     <>

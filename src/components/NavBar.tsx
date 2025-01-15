@@ -1,5 +1,3 @@
-// import { LogOutButton } from "./LogOutButton";
-
 import Link from "next/link";
 
 type Props = {
@@ -16,9 +14,13 @@ export function NavBar({ user }: Props) {
         <li>Link 3</li>
       </ul>
       <div>
-        {user && <div>Hello {user.name}</div>}
+        {user && (
+          <div>
+            Hello {user.name}
+            <Link href="/login/?action=logout">Log Out</Link>
+          </div>
+        )}
         {!user && <Link href={"/login"}>Log In</Link>}
-        {/* <LogOutButton /> */}
       </div>
     </nav>
   );
