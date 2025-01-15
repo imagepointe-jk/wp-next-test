@@ -7,6 +7,7 @@ export async function middleware(request: NextRequest) {
   const cookieStore = await cookies();
   const cookiesToken = cookieStore.get("wp_jwt_auth")?.value;
   const cookiesId = cookieStore.get("wp_user_id")?.value;
+  console.log("tried to visit", request.url);
 
   try {
     if (!cookiesToken || !cookiesId)
@@ -17,6 +18,7 @@ export async function middleware(request: NextRequest) {
   } catch (error) {
     console.error(error);
     const url = new URL("/login", request.url);
+    url.searchParams.append("redirect_to", encodeURIComponent(request.url));
     return NextResponse.redirect(url);
   }
 

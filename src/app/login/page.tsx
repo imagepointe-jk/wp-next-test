@@ -38,7 +38,9 @@ export default function Page() {
         );
       if (!json.id) throw new Error("Invalid id received from API");
 
-      router.push(`/users/${json.id}`);
+      const redirectTo = searchParams.get("redirect_to");
+      if (redirectTo) router.push(decodeURIComponent(redirectTo));
+      else router.push(`/users/${json.id}`);
     } catch (error) {
       console.error(error);
       setError("Login failed.");
