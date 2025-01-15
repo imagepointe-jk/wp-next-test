@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { MiddlewareConfig, NextRequest, NextResponse } from "next/server";
 import { validateUserResponse } from "./types/validation/wpgraphql";
+import { getUser } from "./fetch/wordpress";
 
 export async function middleware(request: NextRequest) {
   const cookieStore = await cookies();
@@ -27,25 +28,7 @@ export const config: MiddlewareConfig = {
 };
 
 async function verifyToken(cookiesToken: string, cookiesId: string) {
-  const user = await fetch(process.env.WP_GRAPHQL_URL!, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${cookiesToken}`,
-    },
-    body: JSON.stringify({
-      query: `
-            query getUser {
-              user(id:"${cookiesId}") {
-                id
-                databaseId
-                email
-                name
-              }
-            }
-          `,
-    }),
-  });
+  const user = await getUser(cookiesToken, cookiesId);
   const json = await user.json();
   const parsedUserResponse = validateUserResponse(json);
   if (parsedUserResponse.errors !== undefined) {
